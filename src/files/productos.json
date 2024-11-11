@@ -1,0 +1,12 @@
+[
+	{
+		"id": 1,
+		"title": "Pruba",
+		"description": "primerPreEntrega",
+		"code": "1",
+		"price": "100",
+		"status": "true",
+		"stock": "10",
+		"category": "estudiante"
+	}
+]
