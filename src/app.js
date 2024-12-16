@@ -1,12 +1,16 @@
+
 import express from "express";
+import { connectDB } from "./config/mongoose.config.js";
 import { config as configHandlebars } from "./config/handlebars.config.js";
 import { config as configWebsocket } from "./config/websocket.config.js";
 
 import routerProducts from "./routes/products.router.js";
 import routerCarts from "./routes/carts.router.js";
 import routerViewHome from "./routes/home.view.router.js";
+import routerDescription from "./routes/description.router.js";
 
 const app = express();
+connectDB();
 const PORT = 8080;
 
 app.use("/api/public", express.static("./src/public"));
@@ -18,6 +22,7 @@ app.use(express.json());
 configHandlebars(app);
 
 app.use("/api/products", routerProducts);
+app.use("/api/products/:id", routerDescription);
 app.use("/api/carts", routerCarts);
 app.use("/", routerViewHome);
 

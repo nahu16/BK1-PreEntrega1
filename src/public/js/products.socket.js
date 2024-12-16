@@ -15,7 +15,7 @@ socket.on("products-list", (data) => {
         card.classList.add("card");
 
         const productId = document.createElement("p");
-        productId.textContent = `Id: ${producto.id}`;
+        productId.textContent = `Id: ${producto._id}`;
 
         const productName = document.createElement("h4");
         productName.textContent = `Nombre: ${producto.title}`;
@@ -78,7 +78,6 @@ btnDeletedProduct.addEventListener("click", ()=>{
     if (id > 0){
         socket.emit("delete-product", { id });
     }
-
 });
 
 socket.on("error-message", (data) => {

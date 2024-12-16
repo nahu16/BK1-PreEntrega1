@@ -28,7 +28,7 @@ h1 {
     margin: 15px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     background-color: #fff;
-    width: 200px;
+    width: 250px;
 }
 
 .card h4 {
@@ -53,4 +53,20 @@ h1 {
 #product-form input{
     padding: 5px;
     margin-bottom: 15px;
+}
+
+button {
+    background-color: #28a745;
+    color: white;
+    font-size: 12px;
+    padding: 10px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 5px;
+}
+
+button:hover {
+    background-color: #218838;
 }

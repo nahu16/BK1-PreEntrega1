@@ -1,19 +1,15 @@
-import { generateId } from "../utils/collectionHandler.js";
-import { readJsonFile, writeJsonFile } from "../utils/fileHandler.js";
-import paths from "../utils/paths.js";
 import ErrorManager from "./ErrorManager.js";
+import CartModel from "../models/cart.model.js";
 
 export default class CartManager {
-    #jsonFilename;
     #carts;
 
     constructor() {
-        this.#jsonFilename = "carts.json";
+        this.#carts = CartModel;
     }
 
     async #findOneById (id){
-        this.#carts=await this.getAll();
-        const cartsFound = this.#carts.find((item)=>item.id===Number(id));
+        const cartsFound = await this.#carts.findById(id);
 
         if (!cartsFound){
             throw new ErrorManager("Id no encontrado", 404);
@@ -21,12 +17,18 @@ export default class CartManager {
         return cartsFound;
     }
 
-    async getAll (){
+    async getAll (params){
         try {
-            this.#carts=await readJsonFile(paths.files, this.#jsonFilename);
-            return this.#carts;
+            const $and = [];
+            if (params?.title) $and.push({ title:params.title.toString().toUpperCase().trim() });
+            if (params?.code) $and.push({ code: Number(params.code).trim() });
+            if (params?.category) $and.push({ category:params.category.toString().toUpperCase().trim() });
+
+            const filters = $and.length > 0 ? { $and } : {};
+
+            return await this.#carts.find(filters);
         } catch (error) {
-            throw new ErrorManager(error.message, error.code);
+            throw ErrorManager.handleError(error);
         }
     }
 
@@ -53,8 +55,6 @@ export default class CartManager {
             console.log(products);
 
             this.#carts.push(cart);
-            await writeJsonFile(paths.files, this.#jsonFilename, this.#carts);
-
             return cart;
 
         } catch (error) {
@@ -75,7 +75,6 @@ export default class CartManager {
 
             const index = this.#carts.findIndex((item)=> item.id === Number(id));
             this.#carts[index]= cartsFound;
-            await writeJsonFile(paths.files, this.#jsonFilename, this.#carts);
             return (cartsFound);
         } catch (error) {
             throw new ErrorManager(error.message, error.code);

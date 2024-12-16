@@ -1,20 +1,20 @@
 import ErrorManager from "./ErrorManager.js";
 import ProductoModel from "../models/product.model.js";
 
-export default class ProductManager {
-    #products;
+export default class DescriptionManager {
+    #descriptions;
 
     constructor() {
-        this.#products = ProductoModel;
+        this.#descriptions = ProductoModel;
     }
 
     async #findOneById (id){
-        const productsFound = await this.#products.findById(id);
+        const descriptionsFound = await this.#descriptions.findById(id);
 
-        if (!productsFound){
+        if (!descriptionsFound){
             throw new ErrorManager("Id no encontrado", 404);
         }
-        return productsFound;
+        return descriptionsFound;
     }
 
     async getAll (params){
@@ -27,7 +27,7 @@ export default class ProductManager {
 
             const filters = $and.length > 0 ? { $and } : {};
 
-            return await this.#products.find(filters);
+            return await this.#descriptions.find(filters);
         } catch (error) {
             throw ErrorManager.handleError(error);
         }
@@ -35,8 +35,8 @@ export default class ProductManager {
 
     async getOneById (id){
         try {
-            const productsFound = await this.#findOneById(id);
-            return productsFound;
+            const descriptionsFound = await this.#findOneById(id);
+            return descriptionsFound;
         } catch (error) {
             throw ErrorManager.handleError(error);
         }
@@ -44,8 +44,8 @@ export default class ProductManager {
 
     async insertOne (data){
         try {
-            const product = await this.#products.create(data);
-            return product;
+            const description = await this.#descriptions.create(data);
+            return description;
 
         } catch (error) {
             throw ErrorManager.handleError(error);
@@ -54,12 +54,12 @@ export default class ProductManager {
 
     async updateOneById (id, data){
         try {
-            const productsFound = await this.#findOneById(id);
-            const newValues = { ...productsFound, ...data };
-            productsFound.set(newValues);
-            productsFound.save();
+            const descriptionsFound = await this.#findOneById(id);
+            const newValues = { ...descriptionsFound, ...data };
+            descriptionsFound.set(newValues);
+            descriptionsFound.save();
 
-            return productsFound;
+            return descriptionsFound;
 
         } catch (error) {
             throw ErrorManager.handleError(error);
@@ -68,8 +68,8 @@ export default class ProductManager {
 
     async deleteOneById (id){
         try {
-            const productsFound = await this.#findOneById(id);
-            await productsFound.deleteOne();
+            const descriptionsFound = await this.#findOneById(id);
+            await descriptionsFound.deleteOne();
         } catch (error) {
             throw ErrorManager.handleError(error);
         }
