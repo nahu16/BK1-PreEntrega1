@@ -5,6 +5,7 @@ const productForm = document.getElementById("product-form");
 const errorMessage = document.getElementById("error-message");
 const inputProductId = document.getElementById("input-product-id");
 const btnDeletedProduct = document.getElementById("btn-deleted-product");
+const btnBackMenu = document.getElementById("btn-back-menu");
 
 socket.on("products-list", (data) => {
     const products = data.products || [];
@@ -74,12 +75,14 @@ btnDeletedProduct.addEventListener("click", ()=>{
     const id = inputProductId.value;
     inputProductId.innerHTML="";
     errorMessage.innerHTML = "";
-
-    if (id > 0){
+    if (id && id.trim() !==""){
         socket.emit("delete-product", { id });
     }
 });
 
+btnBackMenu.addEventListener("click", ()=>{
+    window.location.href = "/";
+});
 socket.on("error-message", (data) => {
     errorMessage.innerHTML = data.message;
 });

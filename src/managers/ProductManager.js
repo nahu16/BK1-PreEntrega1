@@ -20,14 +20,21 @@ export default class ProductManager {
     async getAll (params){
         try {
             const $and = [];
-            if (params?.title) $and.push({ title:params.title.toString().toUpperCase().trim() });
-            if (params?.code) $and.push({ code: Number(params.code).trim() });
-            if (params?.category) $and.push({ category:params.category.toString().toUpperCase().trim() });
-            if (params?.priceGte) $and.push({ price: { $gte: Number(params.priceGte) } });
+            if (params?.title) $and.push({ title: { $regex: params.title, $options: "i" } });
+            const filters = $and.length>0 ? { $and } : {};
 
-            const filters = $and.length > 0 ? { $and } : {};
+            const sort = {
+                asc: { title: 1 },
+                desc: { title: -1 },
+            };
 
-            return await this.#products.find(filters);
+            const paginationOptions={
+                limit: params?.limit || 10,
+                page: params?.page || 1,
+                sort: sort[params?.sort] || {},
+                lean: true,
+            };
+            return await this.#products.paginate(filters, paginationOptions);
         } catch (error) {
             throw ErrorManager.handleError(error);
         }

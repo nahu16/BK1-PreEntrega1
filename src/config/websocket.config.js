@@ -7,13 +7,14 @@ export const config = (httpServer) => {
     const socketServer = new Server(httpServer);
 
     socketServer.on("connection", async (socket) => {
-        socketServer.emit("products-list", { products: await productManager.getAll() });
+        const products = await productManager.getAll();
+        socketServer.emit("products-list", { products: products.docs });
 
         socket.on("insert-product", async (data)=>{
             try {
                 await productManager.insertOne(data);
-
-                socketServer.emit("products-list", { products: await productManager.getAll() });
+                const products = await productManager.getAll();
+                socketServer.emit("products-list", { products: products.docs });
             } catch (error) {
                 socketServer.emit("error-message", { message: error.message });
             }
@@ -22,7 +23,8 @@ export const config = (httpServer) => {
             try {
                 await productManager.deleteOneById(data.id);
 
-                socketServer.emit("products-list", { products: await productManager.getAll() });
+                const products = await productManager.getAll();
+                socketServer.emit("products-list", { products: products.docs });
             } catch (error) {
                 socketServer.emit("error-message", { message: error.message });
             }

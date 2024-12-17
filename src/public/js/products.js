@@ -3,11 +3,16 @@ const btnRefreshProductsList = document.getElementById("btn-refresh-products-lis
 const btnCartProducts = document.getElementById("btn-cart-products");
 const btnNewProduct = document.getElementById("btn-new-product");
 const productsContainer = document.getElementById("products-list");
+const paginationContainer = document.getElementById("pagination");
+
+let currentPage = 1;
+let sortDirection = "asc";
 
 const loadProductsList = async()=>{
-    const response = await fetch("/api/products", { method:"GET" });
+    const response = await fetch(`/api/products?page=${currentPage}&sort=${sortDirection}`, { method:"GET" });
     const data = await response.json();
     const products = data.payload || [];
+    const pagination = data.pagination || [];
 
     productsContainer.innerHTML = "";
 
@@ -58,6 +63,18 @@ const loadProductsList = async()=>{
         card.appendChild(descripcionId);
         productsContainer.appendChild(card);
     });
+    paginationContainer.innerHTML = ""; // Limpiar contenedor de paginación
+    const totalPages = pagination.totalPages || 1;
+
+    for (let page = 1; page <= totalPages; page++) {
+        const button = document.createElement("button");
+        button.textContent = page;
+        button.addEventListener("click", () => {
+            currentPage = page;
+            loadProductsList();
+        });
+        paginationContainer.appendChild(button);
+    }
 };
 
 btnRefreshProductsList.addEventListener("click", ()=>{
@@ -70,6 +87,19 @@ btnNewProduct.addEventListener("click", ()=>{
 
 btnCartProducts.addEventListener("click", ()=>{
     window.location.href = "/cartProducts";
+});
+
+const sortAscButton = document.getElementById("sort-asc");
+const sortDescButton = document.getElementById("sort-desc");
+
+sortAscButton.addEventListener("click", () => {
+    sortDirection = "asc";
+    loadProductsList();
+});
+
+sortDescButton.addEventListener("click", () => {
+    sortDirection = "desc";
+    loadProductsList();
 });
 
 loadProductsList();
