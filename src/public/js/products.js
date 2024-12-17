@@ -33,15 +33,16 @@ const loadProductsList = async()=>{
                 category: prod.category,
                 id: prod._id,
             };
-            const response = await fetch("/api/carts", {
+            const response = await fetch("/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ buy }),
             });
-            if (response){
-                alert("se agrego al carrito");
+            if (response.ok === "success") {
+                alert("Producto agregado al carrito");
+            } else {
+                console.error("Error al agregar al carrito:", data.message);
             }
-
         });
 
         const descripcionId = document.createElement("button");

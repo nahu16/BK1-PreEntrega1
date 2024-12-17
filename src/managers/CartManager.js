@@ -17,16 +17,9 @@ export default class CartManager {
         return cartsFound;
     }
 
-    async getAll (params){
+    async getAll (){
         try {
-            const $and = [];
-            if (params?.title) $and.push({ title:params.title.toString().toUpperCase().trim() });
-            if (params?.code) $and.push({ code: Number(params.code).trim() });
-            if (params?.category) $and.push({ category:params.category.toString().toUpperCase().trim() });
-
-            const filters = $and.length > 0 ? { $and } : {};
-
-            return await this.#carts.find(filters);
+            return await this.#carts.find();
         } catch (error) {
             throw ErrorManager.handleError(error);
         }
@@ -34,8 +27,7 @@ export default class CartManager {
 
     async getOneById (id){
         try {
-            const cartsFound = await this.#findOneById(id);
-            return cartsFound;
+            return await this.#findOneById(id);
         } catch (error) {
             throw new ErrorManager(error.message, error.code);
         }
@@ -44,28 +36,17 @@ export default class CartManager {
     async insertOne (data){
         try {
 
-            const products = data?.products?.map(((item)=>{
-                return { product: Number(item.product), quantity: 1 };
-            }));
-
-            const cart = {
-                id : generateId(await this.getAll()),
-                products: products || [],
-            };
-            console.log(products);
-
-            this.#carts.push(cart);
+            const cart = await this.#carts.create(data, quantity);
             return cart;
-
         } catch (error) {
             throw new ErrorManager(error.message, error.code);
         }
     }
 
-    addOneProduct = async (id, productId) =>{
+    addOneProduct = async (id, data) =>{
         try {
             const cartsFound = await this.#findOneById(id);
-            const productIndex = cartsFound.products.findIndex((item)=> item.product === Number(productId));
+            const productIndex = await this.#carts.findOne({ _id: { $ne: id } });
 
             if(productIndex >= 0){
                 cartsFound.products[productIndex].quantity++;
@@ -73,9 +54,11 @@ export default class CartManager {
                 cartsFound.products.push({ product: Number(productId), quantity:1 });
             }
 
-            const index = this.#carts.findIndex((item)=> item.id === Number(id));
-            this.#carts[index]= cartsFound;
-            return (cartsFound);
+            const newCart = { ...cartsFound, ...data };
+            cartsFound.set(newCart);
+            cartsFound.save();
+
+            return cartsFound;
         } catch (error) {
             throw new ErrorManager(error.message, error.code);
         }
