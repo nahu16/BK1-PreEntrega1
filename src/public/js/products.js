@@ -32,18 +32,17 @@ const loadProductsList = async()=>{
         const agregarAlCarrito = document.createElement("button");
         agregarAlCarrito.innerHTML = "Agregar al carrito";
         agregarAlCarrito.addEventListener("click", async ()=>{
+
             const buy = {
-                title: prod.title,
-                price: prod.price,
-                category: prod.category,
-                id: prod._id,
+                products: [{ product: prod._id, quantity: 1 }],
             };
             const response = await fetch("/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ buy }),
             });
-            if (response.ok === "success") {
+
+            if (response.ok) {
                 alert("Producto agregado al carrito");
             } else {
                 console.error("Error al agregar al carrito:", data.message);
@@ -63,7 +62,7 @@ const loadProductsList = async()=>{
         card.appendChild(descripcionId);
         productsContainer.appendChild(card);
     });
-    paginationContainer.innerHTML = ""; // Limpiar contenedor de paginación
+    paginationContainer.innerHTML = "";
     const totalPages = pagination.totalPages || 1;
 
     for (let page = 1; page <= totalPages; page++) {

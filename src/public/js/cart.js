@@ -5,29 +5,28 @@ const btnBackMenu = document.getElementById("btn-back-menu");
 const carritoCompras = async()=>{
     const response = await fetch("/api/carts", { method:"GET" });
     const data = await response.json();
-    const products = data.payload || [];
+    const carts = data.payload || [];
 
     productsCart.innerHTML = "";
 
-    if (products.length > 0) {
-        products.forEach((item) => {
-            const card = document.createElement("div");
-            card.classList.add("card");
+    if (carts.length > 0) {
+        carts.forEach((cart) => {
+            cart.products.forEach((item) => {
+                const card = document.createElement("div");
+                card.classList.add("card");
+                console.log(item);
 
-            const productName = document.createElement("h4");
-            productName.textContent = `Nombre: ${item.title}`;
+                const productName = document.createElement("h4");
+                productName.textContent = `id: ${item.product}`;
 
-            const productPrice = document.createElement("p");
-            productPrice.textContent = `Precio: $ ${item.price}`;
+                const productQuantity = document.createElement("p");
+                productQuantity.textContent = `Cantidad: $ ${item.quantity}`;
 
-            const productCategory = document.createElement("p");
-            productCategory.textContent = `Categoria: ${item.category}`;
+                card.appendChild(productName);
+                card.appendChild(productQuantity);
 
-            card.appendChild(productName);
-            card.appendChild(productPrice);
-            card.appendChild(productCategory);
-
-            productsCart.appendChild(card);
+                productsCart.appendChild(card);
+            });
         });
     }
 };

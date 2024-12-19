@@ -31,15 +31,33 @@ router.post("/", async (req, res) => {
     }
 });
 
-router.post("/:cid/products/:pid", async(req, res)=>{
+router.put("/:cid/products/:pid", async(req, res)=>{
     try {
         const { cid, pid } = req.params;
         const { quantity } = req.body;
-        const carts = await cartManager.addOneProduct(cid, pid, quantity || 1);
+        const carts = await cartManager.addOneProduct(cid, pid, quantity);
         res.status(200).json({ status: "success", payload: carts });
     } catch (error) {
         res.status(error.code || 500).json({ status: "error", message:error.message });
     }
 });
 
+router.delete("/:id", async (req, res) => {
+    try {
+        const cartDeleted = await cartManager.deleteOneById(req.params.id);
+        res.status(200).json({ status: true, payload: cartDeleted });
+    } catch (error) {
+        errorHandler(res, error.message);
+    }
+});
+
+router.delete("/:id/products/:pid", async (req, res) => {
+    try {
+        const { id, pid: productId } = req.params;
+        const cartDeleted = await cartManager.deleteOneProduct(id, productId);
+        res.status(200).json({ status: true, payload: cartDeleted });
+    } catch (error) {
+        errorHandler(res, error.message);
+    }
+});
 export default router;
