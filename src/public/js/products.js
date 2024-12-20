@@ -1,3 +1,4 @@
+const socket = io();
 
 const btnRefreshProductsList = document.getElementById("btn-refresh-products-list");
 const btnCartProducts = document.getElementById("btn-cart-products");
@@ -31,23 +32,16 @@ const loadProductsList = async()=>{
 
         const agregarAlCarrito = document.createElement("button");
         agregarAlCarrito.innerHTML = "Agregar al carrito";
-        agregarAlCarrito.addEventListener("click", async ()=>{
+        agregarAlCarrito.onclick = ()=>{
+            const cartId = localStorage.getItem("carrito");
 
-            const buy = {
-                products: [{ product: prod._id, quantity: 1 }],
-            };
-            const response = await fetch("/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ buy }),
-            });
-
-            if (response.ok) {
-                alert("Producto agregado al carrito");
-            } else {
-                console.error("Error al agregar al carrito:", data.message);
+            const products = [{ product: prod._id, quantity: 1 }];
+            if(cartId){
+                socket.emit("cart", { cartId, products });
+            }else{
+                socket.emit("add-cart", { products });
             }
-        });
+        };
 
         const descripcionId = document.createElement("button");
         descripcionId.innerHTML = "Ver más...";

@@ -8,7 +8,7 @@ const productSchema = new Schema({
         upperCase: true,
         trim: true,
         minLength: [ 3, "El nombre debe ser mayor a 3 caracteres" ],
-        maxLength: [ 10, "El nombre no puede tener más de 10 caracteres" ],
+        maxLength: [ 20, "El nombre no puede tener más de 20 caracteres" ],
     },
     description:{
         type: String,

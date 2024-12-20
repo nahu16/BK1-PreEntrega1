@@ -9,6 +9,7 @@ export default class CartManager {
     }
 
     async #findOneById (id){
+
         const cartsFound = await this.#carts.findById(id);
 
         if (!cartsFound){
@@ -37,29 +38,42 @@ export default class CartManager {
         try {
             const cart = await this.#carts.create(data);
             return cart;
+
         } catch (error) {
             throw new ErrorManager(error.message, error.code);
         }
     }
+    async addOneProduct(cartId, productData){
+        const cart = await this.#findOneById(cartId);
+        if (!cart) {
+            throw new Error("Cart not found");
+        }
 
-    addOneProduct = async (id, productId) =>{
+        for (const item of productData.products) {
+            const existingProductIndex = cart.products.findIndex( (p)=> p.product.toString() === item.product);
+            if (existingProductIndex !== -1) {
+                cart.products[existingProductIndex].quantity += item.quantity;
+            } else {
+                cart.products.push({ product: item.product, quantity: item.quantity });
+            }
+        }
+        await cart.save();
+        return cart;
+    }
+
+    async updateOneById (id, data){
         try {
             const cartsFound = await this.#findOneById(id);
-            const productIndex = cartsFound.products.findIndex((item) => item.product._id.toString() === productId);
-
-            if(productIndex >= 0){
-                cartsFound.products[productIndex].quantity++;
-            }else{
-                cartsFound.products.push({ product: productId, quantity: 1 });
-            }
-
-            await cartsFound.save();
+            const newValues = { ...cartsFound, ...data };
+            cartsFound.set(newValues);
+            cartsFound.save();
 
             return cartsFound;
+
         } catch (error) {
-            throw new ErrorManager(error.message, error.code);
+            throw ErrorManager.handleError(error);
         }
-    };
+    }
 
     async deleteOneProduct(id, productId) {
         try {
