@@ -1,7 +1,6 @@
 import { Server } from "socket.io";
 import ProductManager from "../managers/ProductManager.js";
 import CartManager from "../managers/CartManager.js";
-import { mongoose } from "mongoose";
 
 const productManager = new ProductManager();
 const cartManager = new CartManager();
@@ -40,6 +39,15 @@ export const config = (httpServer) => {
                 socketServer.emit("error-message", { message: error.message });
             }
         });
+        socket.on("delete-product", async (data)=>{
+            try {
+                const { id, productId } = data;
+                await cartManager.deleteOneProduct(id, productId);
+                socketServer.emit("products-cart", { carts: await cartManager.getAll() });
+            } catch (error) {
+                socketServer.emit("error-message", { message: error.message });
+            }
+        });
         socket.on("add-cart", async (data)=>{
             try {
                 await cartManager.insertOne(data);
@@ -51,9 +59,7 @@ export const config = (httpServer) => {
         socket.on("cart", async (data)=>{
             try {
                 const { cartId, products }= data;
-                const idCarro = mongoose.Types.ObjectId(cartId);
-
-                await cartManager.addOneProduct(idCarro, products);
+                await cartManager.addOneProduct(cartId, products);
                 socketServer.emit("products-cart", { carts: await cartManager.getAll() });
             } catch (error) {
                 socketServer.emit("error-message", { message: error.message });

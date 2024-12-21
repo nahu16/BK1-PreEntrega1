@@ -49,14 +49,14 @@ export default class CartManager {
             throw new Error("Cart not found");
         }
 
-        for (const item of productData.products) {
-            const existingProductIndex = cart.products.findIndex( (p)=> p.product.toString() === item.product);
+        productData.forEach((item) => {
+            const existingProductIndex = cart.products.findIndex((p) => p.product.toString() === item.product);
             if (existingProductIndex !== -1) {
                 cart.products[existingProductIndex].quantity += item.quantity;
             } else {
                 cart.products.push({ product: item.product, quantity: item.quantity });
             }
-        }
+        });
         await cart.save();
         return cart;
     }

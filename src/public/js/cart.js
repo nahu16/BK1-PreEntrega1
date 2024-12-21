@@ -27,8 +27,19 @@ const carritoCompras = async()=>{
                 const productQuantity = document.createElement("p");
                 productQuantity.textContent = `Cantidad: $ ${item.quantity}`;
 
+                const btnDeleteProduct = document.createElement("button");
+                btnDeleteProduct.innerHTML = "Eliminar producto";
+                btnDeleteProduct.onclick = ()=>{
+                    const id = cart._id;
+                    const productId = item.product;
+                    socket.emit("delete-product", { id, productId });
+                    carritoCompras();
+                    console.log("Producto eliminado");
+                };
+
                 card.appendChild(productName);
                 card.appendChild(productQuantity);
+                card.appendChild(btnDeleteProduct);
                 productsCart.appendChild(card);
             });
             btnDeletedCart.onclick = ()=>{

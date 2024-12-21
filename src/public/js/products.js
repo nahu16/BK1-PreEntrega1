@@ -33,11 +33,12 @@ const loadProductsList = async()=>{
         const agregarAlCarrito = document.createElement("button");
         agregarAlCarrito.innerHTML = "Agregar al carrito";
         agregarAlCarrito.onclick = ()=>{
-            const cartId = localStorage.getItem("carrito");
+            const cartId = JSON.parse(localStorage.getItem("carrito"));
 
             const products = [{ product: prod._id, quantity: 1 }];
             if(cartId){
                 socket.emit("cart", { cartId, products });
+
             }else{
                 socket.emit("add-cart", { products });
             }
